@@ -39,10 +39,9 @@ const initCli = async () => {
   }
 
   if (args.s) {
-    // 1. получаем токен
-    const token = await getToken("token");
-
     try {
+      const token = await getToken("token");
+
       const weatherData = await apiServices.getWeather(token, args.s);
       console.log("weatherData ->", weatherData);
     } catch (e) {
