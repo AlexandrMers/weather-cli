@@ -39,13 +39,27 @@ const initCli = async () => {
   }
 
   if (args.s) {
-    try {
-      const token = process.env.TOKEN ?? (await getToken("token"));
-      const weatherData = await apiServices.getWeather(token, args.s);
-      console.log("weatherData ->", weatherData);
-    } catch (e) {
-      logServices.error(e.message);
+    // Сохранение города
+  }
+
+  try {
+    const token = process.env.TOKEN ?? (await getToken("token"));
+    const city = process.env.CITY;
+    const weatherData = await apiServices.getWeather(token, city);
+
+    // Красивый вывод погоды
+    console.log("weatherData ->", weatherData);
+  } catch (e) {
+    if (e?.response?.status === 404) {
+      logServices.error("Неправильно указано название города");
+      return;
     }
+    if (e?.response?.status === 401) {
+      logServices.error("Неправильно указан токен");
+      return;
+    }
+
+    logServices.error(e.message);
   }
 };
 
