@@ -1,6 +1,6 @@
 const hasSlashString = (value = "") => value.charAt(0) === "-";
 
-const extractFirstSymbol = (value) => value.substring(1);
+const cutFirstSymbol = (value) => value.substring(1);
 
 export const getArgs = (args = []) => {
   const [_executorDir, _programDir, ...restArguments] = args;
@@ -13,16 +13,16 @@ export const getArgs = (args = []) => {
     }
 
     if (nextValue && hasSlashString(nextValue)) {
-      res[extractFirstSymbol(value)] = true;
+      res[cutFirstSymbol(value)] = true;
       return res;
     }
 
     if (nextValue && !hasSlashString(nextValue)) {
-      res[extractFirstSymbol(value)] = nextValue;
+      res[cutFirstSymbol(value)] = nextValue;
       return res;
     }
 
-    res[extractFirstSymbol(value)] = true;
+    res[cutFirstSymbol(value)] = true;
     return res;
   }, {});
 };
