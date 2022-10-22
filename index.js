@@ -1,9 +1,11 @@
-const a = 0;
+#!/usr/bin/env node
 
-const calculateFromIs = (param = "") => {
-  return param + 4;
+import { getArgs } from "./helpers/getArgs.js";
 
-  console.log("hello");
+const initCli = () => {
+  const args = getArgs(process.argv);
+
+  console.log("arguments check ->", args);
 };
 
-const result = calculateFromIs(0);
+initCli();
