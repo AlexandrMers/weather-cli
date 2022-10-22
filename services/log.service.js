@@ -8,3 +8,11 @@ const printHelpMessage = () =>
 export const printHelp = () => {
   console.log(printHelpMessage());
 };
+
+export const success = (msg) => {
+  console.log(`${chalk.bgGreen(" УСПЕШНО ")} ${msg}`);
+};
+
+export const error = (msg) => {
+  console.log(`${chalk.bgRed(" ПРОИЗОШЛА ОШИБКА ")} ${msg}`);
+};
