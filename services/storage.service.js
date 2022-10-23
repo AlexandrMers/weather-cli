@@ -20,13 +20,18 @@ export const saveKeyValueToHomeDir = async (key, value) => {
     const fileData = await fs.promises.readFile(filePath);
     data = JSON.parse(fileData);
   }
+
   data[key] = value;
 
   await fs.promises.writeFile(filePath, JSON.stringify(data));
 };
 
 export const getValue = async (key = "") => {
-  const data = await fs.promises.readFile(filePath);
-  const result = JSON.parse(data);
-  return result[key];
+  if (await isExist(filePath)) {
+    const data = await fs.promises.readFile(filePath);
+    const result = JSON.parse(data);
+    return result[key];
+  }
+
+  return undefined;
 };

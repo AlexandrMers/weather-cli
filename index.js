@@ -6,6 +6,9 @@ import { getArgs } from "./helpers/getArgs.js";
 // Services
 import { logServices, storageServices, apiServices } from "./services/index.js";
 
+// Constants
+import { DICTIONARY } from "./constants.js";
+
 const saveToken = async (token = "") => {
   try {
     await storageServices.saveKeyValueToHomeDir("token", token);
@@ -15,14 +18,61 @@ const saveToken = async (token = "") => {
   }
 };
 
-const getToken = async (key = "") => {
+const saveCity = async (city = "") => {
   try {
-    const token = await storageServices.getValue(key);
-    return token;
+    await storageServices.saveKeyValueToHomeDir("city", city);
+    logServices.success("Город успешно сохранен");
   } catch (error) {
-    logServices.error(
-      "Нет токена в системе. Пожалуйста, воспользуйтесь установкой токен -t [TOKEN]"
-    );
+    logServices.error(error.message);
+  }
+};
+
+const getValue = async (key = "", errorMessage) => {
+  const value = await storageServices.getValue(key);
+  if (value) {
+    return value;
+  }
+
+  logServices.error(errorMessage);
+  return undefined;
+};
+
+const getForecast = async () => {
+  try {
+    const token =
+      process.env.TOKEN ??
+      (await getValue(
+        DICTIONARY.TOKEN,
+        "Нет токена в системе. Пожалуйста, воспользуйтесь установкой токена -t [TOKEN]"
+      ));
+
+    const city =
+      process.env.CITY ??
+      (await getValue(
+        DICTIONARY.CITY,
+        "Нет города в системе. Пожалуйста, воспользуйтесь установкой города -s [CITY]"
+      ));
+
+    if (!token || !city) {
+      return;
+    }
+
+    const weatherData = await apiServices.getWeather(token, city);
+
+    // Красивый вывод погоды
+    console.log("weatherData ->", weatherData);
+  } catch (e) {
+    if (e?.response?.status === 404) {
+      logServices.error("Неправильно указано название города");
+      return;
+    }
+
+    if (e?.response?.status === 401) {
+      logServices.error("Неправильно указан токен");
+      return;
+    }
+
+    logServices.error(e.message);
   }
 };
 
@@ -34,33 +84,15 @@ const initCli = async () => {
   }
 
   if (args.t) {
-    saveToken(args.t);
-    return;
+    await saveToken(args.t);
   }
 
   if (args.s) {
-    // Сохранение города
+    await saveCity(args.s);
   }
 
-  try {
-    const token = process.env.TOKEN ?? (await getToken("token"));
-    const city = process.env.CITY;
-    const weatherData = await apiServices.getWeather(token, city);
-
-    // Красивый вывод погоды
-    console.log("weatherData ->", weatherData);
-  } catch (e) {
-    if (e?.response?.status === 404) {
-      logServices.error("Неправильно указано название города");
-      return;
-    }
-    if (e?.response?.status === 401) {
-      logServices.error("Неправильно указан токен");
-      return;
-    }
-
-    logServices.error(e.message);
-  }
+  // Вывод прогноза погоды
+  getForecast();
 };
 
 initCli();
