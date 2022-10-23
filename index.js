@@ -59,8 +59,10 @@ const getForecast = async () => {
 
     const weatherData = await apiServices.getWeather(token, city);
 
-    // Красивый вывод погоды
-    console.log("weatherData ->", weatherData);
+    logServices.printWeather(
+      weatherData,
+      apiServices.getIcon(weatherData.weather[0].icon)
+    );
   } catch (e) {
     if (e?.response?.status === 404) {
       logServices.error("Неправильно указано название города");
@@ -81,6 +83,7 @@ const initCli = async () => {
 
   if (args.h) {
     logServices.printHelp();
+    return;
   }
 
   if (args.t) {

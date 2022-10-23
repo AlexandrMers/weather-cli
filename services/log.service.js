@@ -16,3 +16,15 @@ export const success = (msg) => {
 export const error = (msg) => {
   console.log(`${chalk.bgRed(" ПРОИЗОШЛА ОШИБКА ")} ${msg}`);
 };
+
+export const printWeather = (weather, icon) => {
+  console.log(
+    `${chalk.bgBlackBright(" ПОГОДА В ГОРОДЕ: ")}${weather.name}\n${icon}  ${
+      weather.weather[0].description
+    }\n🌡️   Температура: ${weather.main.temp} (ощущается как ${
+      weather.main.feels_like
+    })\n🌊  Влажность: ${weather.main.humidity}%\n🌬️   Скорость ветра: ${
+      weather.wind.speed
+    }`
+  );
+};
